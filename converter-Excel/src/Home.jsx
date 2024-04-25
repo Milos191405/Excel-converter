@@ -28,8 +28,28 @@ function Home() {
         const worksheet = workbook.Sheets[sheetName];
 
         const jsonData = utils.sheet_to_json(worksheet);
+         console.log(jsonData)
 
-        setItems(jsonData);
+        // Convert date strings to Date objects
+         const formattedData = jsonData.map((row) => {
+           const formattedRow = { ...row };
+
+           // Assuming the date column is named 'dateColumn'
+           if (formattedRow.hasOwnProperty("Datum" || "Date" || "datum" || "date" )) {
+           
+
+              const day = formattedRow.Datum.slice(0, 2)
+               const month = formattedRow.Datum.slice(3, 5);
+             const year = formattedRow.Datum.slice(6, 10);
+             console.log(year)
+             formattedRow.Datum = Date.parse(month, day, year).toLocaleString()
+           }
+
+           return formattedRow;
+         });
+
+         console.log(formattedData);
+        setItems(formattedData);
       };
       reader.readAsArrayBuffer(file);
     } catch (error) {
