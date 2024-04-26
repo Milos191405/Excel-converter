@@ -12,6 +12,26 @@ function Home() {
     setFile(selectedFile);
   };
 
+  const convertDates = (json) => {
+    const regex = /(\d+)\.(\d+)\.(\d+)/
+    console.log("Before json:", [...json]);
+    
+    json.forEach( line => {
+      const {Datum} = line
+        const match = regex.exec(Datum)
+        // console.log("match:", match);
+        const [ , day, month, year ] = match
+        const date = new Date(`${year}-${month}-${day}`)
+
+        line.date = date
+    })
+
+    console.log("After json:", json);
+
+
+    return json
+  }
+
   const convertExcelToJson = () => {
     if (!file) {
       console.error("No file selected.");
@@ -27,7 +47,7 @@ function Home() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
 
-        const jsonData = utils.sheet_to_json(worksheet);
+        const jsonData = convertDates(utils.sheet_to_json(worksheet));
 
         setItems(jsonData);
       };
@@ -116,11 +136,19 @@ function Home() {
             <tbody>
               {items.map((item, rowIndex) => (
                 <tr key={rowIndex}>
-                  {Object.keys(item).map((key, cellIndex) => (
+                  {Object.keys(item).map((key, cellIndex) => {
+                    let value
+                    if (key === "date") {
+                      value = item[key].toLocaleString()
+                    } else {
+                      value = item[key]
+                    }
+
+                    return (
                     <td key={cellIndex} className="px-4 py-2">
-                      {item[key]}
+                      {value}
                     </td>
-                  ))}
+                  )})}
                 </tr>
               ))}
             </tbody>
