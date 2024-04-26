@@ -15,7 +15,7 @@ function Home() {
   const convertDates = (json) => {
     const regex = /(\d+)\.(\d+)\.(\d+)/
     console.log("Before json:", [...json]);
-    
+
     json.forEach( line => {
       const {Datum} = line
         const match = regex.exec(Datum)
