@@ -12,29 +12,10 @@ function Home() {
     setFile(selectedFile);
   };
 
-  const convertDates = (json) => {
-    const regex = /(\d+)\.(\d+)\.(\d+)/
-    console.log("Before json:", [...json]);
-
-    json.forEach( line => {
-      const {Datum} = line
-        const match = regex.exec(Datum)
-        // console.log("match:", match);
-        const [ , day, month, year ] = match
-        const date = new Date(`${year}-${month}-${day}`)
-
-        line.date = date
-    })
-
-    console.log("After json:", json);
-
-
-    return json
-  }
-
   const convertExcelToJson = () => {
     if (!file) {
       console.error("No file selected.");
+      
       return;
     }
 
@@ -47,7 +28,7 @@ function Home() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
 
-        const jsonData = convertDates(utils.sheet_to_json(worksheet));
+        const jsonData = utils.sheet_to_json(worksheet);
 
         setItems(jsonData);
       };
@@ -90,19 +71,30 @@ function Home() {
           </button>
         </div>
 
-        <h1 className="text-2xl font-bold mb-4 text-center">List of items</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center mb-">
+          List of items
+        </h1>
 
-        <div className="flex justify-center items-center">
+        <div className="text-center justify-center mb-5">
+          <p>* use .xlsx extension</p>
+          <p>*Date need to be in mm/dd/yyyy format to work properly </p>
+        </div>
+
+        <div className="flex justify-center items-center  mb-5">
           <input
             type="file"
             accept=".xlsx"
             onChange={handleFileChange}
             onKeyPress={handleKeyPress}
-            className="  border border-solid border-red-500 justify-center"
+            className="  border border-solid justify-center"
           />
+
+{/* <span className="absolute center pointer-events-none">Add your file...</span> */}
+
           <button
             onClick={convertExcelToJson}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            
           >
             Convert
           </button>
@@ -136,19 +128,11 @@ function Home() {
             <tbody>
               {items.map((item, rowIndex) => (
                 <tr key={rowIndex}>
-                  {Object.keys(item).map((key, cellIndex) => {
-                    let value
-                    if (key === "date") {
-                      value = item[key].toLocaleString()
-                    } else {
-                      value = item[key]
-                    }
-
-                    return (
+                  {Object.keys(item).map((key, cellIndex) => (
                     <td key={cellIndex} className="px-4 py-2">
-                      {value}
+                      {item[key]}
                     </td>
-                  )})}
+                  ))}
                 </tr>
               ))}
             </tbody>
